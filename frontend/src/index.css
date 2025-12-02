@@ -1,0 +1,232 @@
+/* ============================
+  Header centralizado + menu à direita
+   (Use exatamente este bloco)
+   ============================ */
+
+.site-header {
+  background: #ffffff;
+  border-bottom: 1px solid #eef2f4;
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  box-shadow: 0 1px 0 rgba(15,20,25,0.02);
+}
+
+/* Container geral do header */
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+/* Zona vazia à esquerda para balancear o centro */
+.header-left {
+  width: 240px; /* Aumente se precisar empurrar o menu mais à direita */
+  min-width: 80px;
+}
+
+/* Logo centralizado visualmente */
+.header-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+}
+
+/* Logo em si — maior e mais destaque */
+.logo {
+  pointer-events: auto;
+  text-decoration: none;
+  color: #0b76d1;
+  font-weight: 900;
+  font-size: 1.6rem;        /* <- tamanho do logo (aumentei) */
+  letter-spacing: 0.2px;
+  padding: 4px 8px;
+}
+
+/* Menu no canto direito */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-left: auto;
+  z-index: 70;
+}
+
+/* Links do menu */
+.header-right a {
+  color: #495057;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 6px 9px;
+  border-radius: 8px;
+  transition: all .15s ease;
+}
+
+/* Hover / foco */
+.header-right a:hover {
+  background: rgba(11,118,209,0.07);
+  color: #0b76d1;
+}
+
+/* Botão sair */
+.link-button {
+  background: none;
+  border: none;
+  color: #495057;
+  cursor: pointer;
+  padding: 6px 9px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.link-button:hover { background: rgba(11,118,209,0.07); color: #0b76d1; }
+
+/* Destaque para Login / Cadastro */
+.auth-link {
+  background: #eaf6ff;
+  color: #0b76d1;
+  padding: 6px 10px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+/* Responsividade: em telas pequenas o logo volta ao fluxo normal */
+@media (max-width: 880px) {
+  .header-inner { padding: 10px 14px; }
+  .header-left { width: 40px; }
+  .header-center { position: relative; left: 0; transform: none; pointer-events: auto; width: auto; }
+  .logo { font-size: 1.15rem; }
+  .header-right { gap: 8px; }
+}
+
+/* ============================
+  Hero / topo da página (titulo central maior)
+  ============================ */
+
+.hero {
+  background: #f6fbfb;
+  padding: 56px 20px 36px;
+  text-align: center;
+  border-bottom: 1px solid #f0f6f6;
+}
+
+.hero h1 {
+  margin: 0 0 10px;
+  font-size: 38px;        /* <- título grande igual ao protótipo */
+  line-height: 1.05;
+  font-weight: 800;
+  color: #0f1720;
+  letter-spacing: -0.5px;
+}
+
+.hero p {
+  margin: 0 auto;
+  max-width: 760px;
+  color: #54606a;
+  font-size: 16px;
+}
+
+/* dá um espaçamento extra para o conteúdo não ficar grudado no header sticky */
+body { padding-top: 0; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+/* ============================
+  Categorias — cards grandes como protótipo
+  ============================ */
+
+.categories { padding: 28px 20px; background: #f9fbfb; }
+.categories h2 { margin: 0 0 14px; font-size: 22px; color:#223; font-weight:700; }
+
+/* linha das categorias */
+.cats-row {
+  display:flex;
+  gap:20px;
+  align-items:stretch;
+  margin-top:12px;
+}
+
+/* botão de categoria maior */
+.category-button {
+  flex: 1;
+  border-radius: 10px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  min-height: 120px;        /* altura maior */
+  box-shadow: 0 6px 18px rgba(18,35,70,0.06);
+  transform: translateZ(0);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+/* aparência interna */
+.category-button .cat-inner {
+  padding: 28px;
+  color: #fff;
+  border-radius: 10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+}
+
+/* título e contagem */
+.cat-title { font-size: 20px; font-weight:700; text-transform:none; }
+.cat-count { font-size:14px; opacity:0.95 }
+
+/* efeito quando ativo */
+.category-button.active { outline: 3px solid rgba(11,118,209,0.12); transform: translateY(-4px); }
+
+/* cores por espécie (exemplos) */
+.category-button[data-kind="Cão"] .cat-inner { background: #2d8cf0; }
+.category-button[data-kind="Gato"] .cat-inner { background: #8a4ef0; }
+.category-button[data-kind="Cavalo"] .cat-inner { background: #f08a2d; }
+
+/* Responsividade: empilha as categorias em celular */
+@media (max-width: 880px) {
+  .cats-row { flex-direction: column; }
+  .category-button { min-height: 88px; }
+}
+
+/* ============================
+  Lista de pets (cards estilo lista)
+  ============================ */
+
+.pets-list { display:flex; flex-direction:column; gap:12px; margin-top:16px; }
+.pet-card {
+  display:flex;
+  gap:14px;
+  border:1px solid #eef2f4;
+  padding:14px;
+  border-radius:10px;
+  align-items:center;
+  background:#fff;
+}
+.pet-card img { width:80px; height:80px; object-fit:cover; border-radius:8px; }
+.pet-info h3 { margin:0; font-size:18px; font-weight:700; color:#102026; }
+.pet-info .meta { color:#6b7883; font-size:14px; display:flex; gap:10px; align-items:center; margin-top:6px; }
+
+/* botão adotar ao final */
+.pet-actions { margin-left:auto; }
+
+/* botão primário */
+.btn {
+  background: #09a96b;
+  color:#fff;
+  padding:8px 14px;
+  border-radius:9px;
+  text-decoration:none;
+  font-weight:700;
+  border:none;
+  cursor:pointer;
+}
