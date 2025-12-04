@@ -2,24 +2,25 @@ import { Sequelize } from 'sequelize';
 import 'dotenv/config'; 
 import pg from 'pg'; // <--- IMPORTANTE: Importamos o driver manualmente
 
-const DATABASE_URL = process.env.DATABASE_URL;
+import { Sequelize } from "sequelize";
 
-if (!DATABASE_URL) {
-  console.error("ERRO: DATABASE_URL não definida no arquivo .env");
-  throw new Error('DATABASE_URL not defined');
-}
-
-export const conexao = new Sequelize(DATABASE_URL, {
-  dialect: 'postgres',
-  // Essa linha abaixo é OBRIGATÓRIA para Vercel/Serverless
-  dialectModule: pg, 
-  
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: "postgres",
+  protocol: "postgres",
   logging: false,
   dialectOptions: {
     ssl: {
       require: true,
-      rejectUnauthorized: false 
-    }
+      rejectUnauthorized: false,
+    },
   },
-  timezone: '-03:00',
 });
+
+try {
+  await sequelize.authenticate();
+  console.log("✅ Conectado ao banco com sucesso!");
+} catch (error) {
+  console.error("❌ Erro fatal ao conectar no banco:", error);
+}
+
+export default sequelize;
