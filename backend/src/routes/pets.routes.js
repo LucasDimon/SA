@@ -4,9 +4,9 @@ import { criarPet, listarPets } from "../controllers/petController.js";
 
 const router = Router();
 
-// Config upload
+// Config upload - usa /tmp, que é gravável no Vercel
 const upload = multer({
-  dest: "uploads/"
+  dest: "/tmp/uploads/"
 });
 
 // Rotas
