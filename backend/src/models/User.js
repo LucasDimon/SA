@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import { conexao } from '../database.js';
+import { conexao } from '../database.js'; // Note que '../database.js' deve estar igual
 
 export const User = conexao.define('User', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
