@@ -1,8 +1,10 @@
 import { User } from './User.js';
 import { Animal } from './Animal.js';
 import { Adoption } from './Adoption.js';
-// 1. Importar o modelo Pet
-import { Pet } from './pet.js'; 
+
+// CORREÇÃO AQUI: Mudamos de './pet.js' para './Pet.js' (com P maiúsculo)
+// Certifique-se que o arquivo na pasta models se chama "Pet.js" mesmo.
+import { Pet } from './Pet.js'; 
 
 // --- Definição das Relações ---
 
@@ -18,9 +20,4 @@ Adoption.belongsTo(User, { foreignKey: 'user_id' });
 Animal.hasMany(Adoption, { foreignKey: 'animal_id' });
 Adoption.belongsTo(Animal, { foreignKey: 'animal_id' });
 
-// Nota: O modelo 'Pet' (para o Admin cadastrar manualmente) 
-// por enquanto não tem relação obrigatória com User, 
-// mas você pode adicionar no futuro se quiser saber quem cadastrou.
-
-// 2. Exportar todos os modelos, INCLUINDO Pet
 export { User, Animal, Adoption, Pet };
