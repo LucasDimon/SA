@@ -1,5 +1,6 @@
 import { Sequelize } from 'sequelize';
 import 'dotenv/config'; 
+import pg from 'pg'; // <--- IMPORTANTE: Importamos o driver manualmente
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
@@ -10,14 +11,15 @@ if (!DATABASE_URL) {
 
 export const conexao = new Sequelize(DATABASE_URL, {
   dialect: 'postgres',
-  logging: false, // Define como true se quiser ver os SQLs no console
+  // Essa linha abaixo é OBRIGATÓRIA para Vercel/Serverless
+  dialectModule: pg, 
+  
+  logging: false,
   dialectOptions: {
     ssl: {
       require: true,
-      // Essa linha é CRUCIAL para o Supabase e evita o erro "self-signed certificate"
       rejectUnauthorized: false 
     }
   },
-  // Ajuste de timezone (opcional, mas recomendado para BR)
   timezone: '-03:00',
 });
