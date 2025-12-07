@@ -1,23 +1,20 @@
-import { Sequelize } from 'sequelize';
-import 'dotenv/config'; 
-import pg from 'pg'; // Importação obrigatória para o Vercel
+import { Sequelize } from "sequelize";
+import "dotenv/config";
+import pg from "pg";
+import dns from "dns"; // novo import
 
-import { Sequelize } from 'sequelize';
-import 'dotenv/config';
-import pg from 'pg';
-import dns from 'dns'; // 👈 novo import
-
-// força o Node a usar IPv4 primeiro nas resoluções DNS
-dns.setDefaultResultOrder('ipv4first');
+// Força o Node a resolver DNS usando IPv4 primeiro (ajuda no Render)
+dns.setDefaultResultOrder("ipv4first");
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
+// Verifica se a URL existe
 if (!DATABASE_URL) {
-  throw new Error('DATABASE_URL not defined no .env');
+  throw new Error("DATABASE_URL not defined no .env");
 }
 
 export const conexao = new Sequelize(DATABASE_URL, {
-  dialect: 'postgres',
+  dialect: "postgres",
   dialectModule: pg,
   logging: false,
   dialectOptions: {
@@ -26,5 +23,5 @@ export const conexao = new Sequelize(DATABASE_URL, {
       rejectUnauthorized: false,
     },
   },
-  timezone: '-03:00',
+  timezone: "-03:00",
 });
