@@ -18,7 +18,6 @@ import petsRoutes from './routes/pets.routes.js';
 const app = express();
 
 // --- Configuração de CORS ---
-// Permite que o frontend (Vercel) converse com o backend
 const allowed = (process.env.CORS_ORIGINS || '*')
   .split(',')
   .map(s => s.trim());
@@ -27,41 +26,35 @@ app.use(cors({ origin: allowed.includes('*') ? true : allowed }));
 
 // --- Middlewares ---
 app.use(express.json());
-// Nota: Uploads locais não persistem no Vercel (servidor apaga arquivos temporários).
-// Para produção real, recomenda-se usar Supabase Storage.
 app.use('/uploads', express.static(path.resolve('src/uploads')));
 
-// --- Rota de Saúde (Importante para debug) ---
-app.get('/health', (req, res) => res.json({ 
-  status: 'ok', 
+// --- Rota de Saúde ---
+app.get('/health', (req, res) => res.json({
+  status: 'ok',
   env: process.env.NODE_ENV || 'development',
-  timestamp: new Date().toISOString() 
+  timestamp: new Date().toISOString()
 }));
 
-// --- Rotas da Aplicação ---
+// --- Rotas ---
 app.use('/auth', authRoutes);
 app.use('/animals', animalsRoutes);
 app.use('/adoptions', adoptionRoutes);
 app.use('/pets', petsRoutes);
 
-// --- Tratamento de Erros ---
+// --- Tratamento de Erros Globais ---
 app.use((err, req, res, next) => {
   console.error('Erro interno:', err);
   res.status(err.status || 500).json({ error: err.message || 'Erro interno' });
 });
 
-// --- Inicialização do Banco de Dados ---
+// --- Inicialização do Banco ---
 const initDB = async () => {
   try {
-    // Tenta autenticar a conexão
     await conexao.authenticate();
     console.log('Conexão com o banco estabelecida.');
 
-    // Sincronização de Tabelas
-    // IMPORTANTE: Só executamos o sync({ alter: true }) em desenvolvimento.
-    // Em produção (Vercel), isso deixa a requisição lenta e pode causar erro 500.
     if (process.env.NODE_ENV !== 'production') {
-      console.log('Ambiente de desenvolvimento detectado: Sincronizando tabelas...');
+      console.log('Sincronizando tabelas no ambiente de desenvolvimento...');
       await User.sync({ alter: true });
       await Animal.sync({ alter: true });
       await Pet.sync({ alter: true });
@@ -73,18 +66,13 @@ const initDB = async () => {
   }
 };
 
-// Executa a conexão (sem travar a inicialização do Vercel)
 initDB();
 
-// --- Exportação para Vercel ---
-// O Vercel precisa que o app seja exportado
-export default app;
+// --- Inicialização do Servidor (Render + Local) ---
+const port = process.env.PORT || 3001;
 
-// --- Inicialização Local ---
-// Só abre a porta 3001 se estivermos rodando localmente (node src/server.js)
-if (process.env.NODE_ENV !== 'production') {
-  const port = process.env.PORT || 3001;
-  app.listen(port, () => {
-    console.log(`API rodando localmente em http://localhost:${port}`);
-  });
-}
+app.listen(port, () => {
+  console.log(`API rodando na porta ${port}`);
+});
+
+export default app;
