@@ -53,16 +53,14 @@ const initDB = async () => {
     await conexao.authenticate();
     console.log('Conexão com o banco estabelecida.');
 
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('Sincronizando tabelas no ambiente de desenvolvimento...');
-      await User.sync({ alter: true });
-      await Animal.sync({ alter: true });
-      await Pet.sync({ alter: true });
-      await Adoption.sync({ alter: true });
-      console.log('Tabelas sincronizadas.');
-    }
+    console.log('Sincronizando tabelas no banco (todas)...');
+    await User.sync({ alter: true });
+    await Animal.sync({ alter: true });
+    await Pet.sync({ alter: true });
+    await Adoption.sync({ alter: true });
+    console.log('Tabelas sincronizadas com sucesso.');
   } catch (e) {
-    console.error('Erro fatal ao conectar no banco:', e);
+    console.error('Erro fatal ao conectar/sincronizar o banco:', e);
   }
 };
 
