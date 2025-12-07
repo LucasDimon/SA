@@ -14,11 +14,11 @@ export default function Home() {
   const [pets, setPets] = useState([]);
   const [counts, setCounts] = useState({});
 
-  // carrega todos os animais
+  // carrega todos os pets
   useEffect(() => {
     async function load() {
       try {
-        const res = await api.get('/animals');
+        const res = await api.get('/pets');
         setPets(res.data);
 
         const c = {};
@@ -33,15 +33,15 @@ export default function Home() {
     load();
   }, []);
 
-  // carrega filtrados
+  // carrega filtrados por espécie
   useEffect(() => {
     async function loadFiltered() {
       try {
-        const query = active ? `?especie=${active}` : "";
-        const res = await api.get(`/animals${query}`);
+        const query = active ? `?especie=${encodeURIComponent(active)}` : "";
+        const res = await api.get(`/pets${query}`);
         setPets(res.data);
       } catch (err) {
-        console.error(err);
+        console.error('Erro ao filtrar pets', err);
       }
     }
     loadFiltered();
