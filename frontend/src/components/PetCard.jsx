@@ -1,18 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+const placeholder = '/src/assets/placeholder.png';
+
 export default function PetCard({ pet }) {
+  // escolhe o src da imagem
+  const src = pet.imagem && pet.imagem.trim().length > 0
+    ? pet.imagem
+    : placeholder;
+
   return (
     <div className="pet-card">
       <img
-        src={pet.imagem ? pet.imagem : '/src/assets/placeholder.png'}
+        src={src}
         alt={pet.nome}
         className="pet-card__image"
-        style={{
-          width: "100%",
-          height: "180px",
-          objectFit: "cover",
-          borderRadius: "8px"
+        onError={(e) => {
+          // se o link estiver quebrado, cai pro placeholder
+          e.target.onerror = null;
+          e.target.src = placeholder;
         }}
       />
 
@@ -22,9 +28,9 @@ export default function PetCard({ pet }) {
         </h3>
 
         <div className="meta">
-          <span>{pet.idade ? `${pet.idade} ano(s)` : "Idade não informada"}</span>
-          {pet.sexo && <span>{pet.sexo}</span>}
-          {pet.porte && <span>{pet.porte}</span>}
+          <span>{pet.idade || '—'} ano(s)</span>
+          <span>{pet.sexo || '—'}</span>
+          <span>{pet.porte || '—'}</span>
         </div>
       </div>
 
