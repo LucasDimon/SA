@@ -16,8 +16,24 @@ const router = createBrowserRouter([
   { path: '/register', element: <><Header /><Register /></> },
   { path: '/animals/:id', element: <><Header /><AnimalDetail /></> },
   { path: '/adotar/:id', element: <><Header /><AdoptionForm /></> },
-  { path: '/admin', element: <ProtectedRoute><><Header /><AdminDashboard /></></ProtectedRoute> },
-  { path: "/admin/add-pet", element: <><Header /><AdminAddPet /></> },
+
+  {
+    path: '/admin',
+    element: (
+      <ProtectedRoute>
+        <><Header /><AdminDashboard /></>
+      </ProtectedRoute>
+    )
+  },
+
+  {
+    path: "/admin/add-pet",
+    element: (
+      <ProtectedRoute>
+        <><Header /><AdminAddPet /></>
+      </ProtectedRoute>
+    )
+  },
 ]);
 
 export default function AppShell() {

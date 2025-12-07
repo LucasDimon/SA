@@ -5,6 +5,7 @@ import { getToken, logout } from '../utils/auth';
 export default function Header() {
   const navigate = useNavigate();
   const token = getToken();
+  const isLogged = !!token;
 
   function handleLogout() {
     logout();
@@ -28,9 +29,19 @@ export default function Header() {
           <Link to="/">Sobre</Link>
           <Link to="/">Contato</Link>
 
-          {token ? (
-            <button className="link-button" onClick={handleLogout}>Sair</button>
-          ) : (
+          {isLogged && (
+            <>
+              {/* Botão para cadastrar pet */}
+              <Link to="/admin/add-pet" className="auth-link">
+                Cadastrar Pet
+              </Link>
+              <button className="link-button" onClick={handleLogout}>
+                Sair
+              </button>
+            </>
+          )}
+
+          {!isLogged && (
             <>
               <Link to="/login" className="auth-link">Login</Link>
               <Link to="/register" className="auth-link">Cadastro</Link>

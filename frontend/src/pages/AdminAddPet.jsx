@@ -1,93 +1,218 @@
-import React, { useState } from "react";
-import api from "../api/api"; // Importação Corrigida: Usando o cliente 'api'
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../api/api";
+import { getToken } from "../utils/auth";
 
 export default function AdminAddPet() {
-  const [form, setForm] = useState({
-    nome: "",
-    especie: "",
-    idade: "",
-    sexo: "",
-    porte: "",
-    descricao: "",
-    vacinado: false,
-    castrado: false,
-  });
+  const navigate = useNavigate();
 
-  const [imagem, setImagem] = useState(null);
+  const [form, setForm] = useState({
+    nome: "",
+    especie: "Cão",
+    idade: "",
+    sexo: "",
+    porte: "",
+    descricao: "",
+    vacinado: false,
+    castrado: false,
+    imagem: ""
+  });
 
-  function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  }
+  const [previewUrl, setPreviewUrl] = useState("");
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  // 🔒 Garantir que só logado acesse (além do ProtectedRoute)
+  useEffect(() => {
+    const token = getToken();
+    if (!token) {
+      alert("Você precisa estar logado para cadastrar um pet.");
+      navigate("/login");
+    }
+  }, [navigate]);
 
-    const fd = new FormData();
+  function handleChange(e) {
+    const { name, value, type, checked } = e.target;
 
-    // Adiciona os campos de texto/booleano
-    Object.entries(form).forEach(([key, value]) => fd.append(key, value));
-    
-    // Adiciona a imagem
-    if (imagem) fd.append("imagem", imagem);
+    setForm(prev => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value
+    }));
 
-    try {
-      // Chamada Corrigida: Usando 'api.post' e a rota relativa '/pets'
-      const res = await api.post("/pets", fd, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
-      alert("Pet cadastrado com sucesso!");
-      
-      // Opcional: Limpar formulário após sucesso
-      setForm({
-        nome: "", especie: "", idade: "", sexo: "", porte: "", 
-        descricao: "", vacinado: false, castrado: false,
-      });
-      setImagem(null);
-      
-    } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.error || "Erro ao cadastrar pet.");
-    }
-  }
+    if (name === "imagem") {
+      setPreviewUrl(value);
+    }
+  }
 
-  return (
-    <div className="container">
-      <h2>Cadastrar Novo Pet</h2>
+  async function handleSubmit(e) {
+    e.preventDefault();
 
-      <form onSubmit={handleSubmit} className="form">
-        
-        <input type="text" name="nome" placeholder="Nome" required value={form.nome} onChange={handleChange} />
+    try {
+      await api.post("/pets", {
+        ...form,
+        idade: form.idade ? Number(form.idade) : null,
+      });
 
-        <select name="especie" required value={form.especie} onChange={handleChange}>
-          <option value="">Selecione a Espécie</option>
-          <option>Cão</option>
-          <option>Gato</option>
-          <option>Cavalo</option>
-        </select>
+      alert("Pet cadastrado com sucesso!");
+      // limpa formulário
+      setForm({
+        nome: "",
+        especie: "Cão",
+        idade: "",
+        sexo: "",
+        porte: "",
+        descricao: "",
+        vacinado: false,
+        castrado: false,
+        imagem: ""
+      });
+      setPreviewUrl("");
 
-        <input type="text" name="idade" placeholder="Idade" required value={form.idade} onChange={handleChange} />
-        <input type="text" name="sexo" placeholder="Sexo" required value={form.sexo} onChange={handleChange} />
-        <input type="text" name="porte" placeholder="Porte" required value={form.porte} onChange={handleChange} />
+      // volta pra listagem
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.error || "Erro ao cadastrar pet.");
+    }
+  }
 
-        <textarea name="descricao" placeholder="Descrição" value={form.descricao} onChange={handleChange}></textarea>
+  return (
+    <div className="container page-cadastrar-pet">
+      <h2>Cadastrar Novo Pet</h2>
+      <p>Preencha os dados abaixo para cadastrar um novo amigo para adoção 🐾</p>
 
-        <label>
-          <input type="checkbox" name="vacinado" checked={form.vacinado} onChange={e => setForm({ ...form, vacinado: e.target.checked })} />
-          Vacinado
-        </label>
+      <div className="form-layout">
+        <form onSubmit={handleSubmit} className="form-card">
+          <div className="form-group">
+            <label>Nome</label>
+            <input
+              type="text"
+              name="nome"
+              value={form.nome}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-        <label>
-          <input type="checkbox" name="castrado" checked={form.castrado} onChange={e => setForm({ ...form, castrado: e.target.checked })} />
-          Castrado
-        </label>
+          <div className="form-group">
+            <label>Espécie</label>
+            <select
+              name="especie"
+              value={form.especie}
+              onChange={handleChange}
+            >
+              <option value="Cão">Cão</option>
+              <option value="Gato">Gato</option>
+              <option value="Cavalo">Cavalo</option>
+            </select>
+          </div>
 
-        <label>
-          Foto do Pet:
-          <input type="file" onChange={(e) => setImagem(e.target.files[0])} />
-        </label>
+          <div className="form-group">
+            <label>Idade (em anos)</label>
+            <input
+              type="number"
+              min="0"
+              name="idade"
+              value={form.idade}
+              onChange={handleChange}
+            />
+          </div>
 
-        <button type="submit" className="btn">Cadastrar Pet</button>
-      </form>
-    </div>
-  );
+          <div className="form-group">
+            <label>Sexo</label>
+            <input
+              type="text"
+              name="sexo"
+              placeholder="Macho / Fêmea"
+              value={form.sexo}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Porte</label>
+            <input
+              type="text"
+              name="porte"
+              placeholder="Pequeno / Médio / Grande"
+              value={form.porte}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Descrição</label>
+            <textarea
+              name="descricao"
+              rows={3}
+              value={form.descricao}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Imagem (URL)</label>
+            <input
+              type="text"
+              name="imagem"
+              placeholder="https://exemplo.com/meu-pet.jpg"
+              value={form.imagem}
+              onChange={handleChange}
+            />
+            <small>Use um link completo começando com http:// ou https://</small>
+          </div>
+
+          <div className="form-group check-group">
+            <label>
+              <input
+                type="checkbox"
+                name="vacinado"
+                checked={form.vacinado}
+                onChange={handleChange}
+              />
+              Vacinado
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                name="castrado"
+                checked={form.castrado}
+                onChange={handleChange}
+              />
+              Castrado
+            </label>
+          </div>
+
+          <button type="submit" className="btn btn-primary">
+            Cadastrar Pet
+          </button>
+        </form>
+
+        {/* Prévia da imagem + resumo */}
+        <div className="preview-card">
+          <h3>Prévia</h3>
+
+          {previewUrl ? (
+            <img
+              src={previewUrl}
+              alt="Prévia do pet"
+              className="preview-img"
+              onError={(e) => {
+                e.target.src = '/src/assets/placeholder.png';
+              }}
+            />
+          ) : (
+            <p>Nenhuma imagem informada ainda.</p>
+          )}
+
+          <div className="preview-info">
+            <p><strong>Nome:</strong> {form.nome || '—'}</p>
+            <p><strong>Espécie:</strong> {form.especie}</p>
+            <p><strong>Idade:</strong> {form.idade || '—'}</p>
+            <p><strong>Sexo:</strong> {form.sexo || '—'}</p>
+            <p><strong>Porte:</strong> {form.porte || '—'}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
